@@ -4,89 +4,90 @@ const fs = require('fs');
 const generateMarkdown = require("./utils/generateMarkdown.js");
 
 // TODO: Create an array of questions for user input
-const questions = [{
-        type: 'input',
-        message: 'What is the title of your project?',
-        name: 'title',
-    },
+const questions = () => {
 
-    {
-        type: 'input',
-        message: 'Provide a description of your project.',
-        name: 'description',
-    },
+    return inquirer.prompt([{
+            type: 'input',
+            message: 'What is the title of your project?',
+            name: 'title',
+        },
 
-    {
-        type: 'input',
-        message: 'What would you like to include in the Table of Contents?',
-        name: 'contents',
-    },
+        {
+            type: 'input',
+            message: 'Provide a description of your project.',
+            name: 'description',
+        },
 
-    {
-        type: 'input',
-        message: 'Installation',
-        name: 'installation',
-    },
+        {
+            type: 'input',
+            message: 'What would you like to include in the Table of Contents?',
+            name: 'contents',
+        },
 
-    {
-        type: 'input',
-        message: 'Usage',
-        name: 'usage',
-    },
+        {
+            type: 'input',
+            message: 'Installation',
+            name: 'installation',
+        },
 
-    {
-        type: 'list',
-        message: 'Select a License',
-        name: 'license',
-        choices: [
-            'MIT',
-            'GNU GPLv3',
-            'ISC',
-            'Apache',
-        ]
-    },
+        {
+            type: 'input',
+            message: 'Usage',
+            name: 'usage',
+        },
 
-    {
-        type: 'input',
-        message: 'Who is contributing?',
-        name: 'contribution',
-    },
+        {
+            type: 'list',
+            message: 'Select a License',
+            name: 'license',
+            choices: [
+                'MIT',
+                'GNU GPLv3',
+                'ISC',
+                'Apache',
+            ]
+        },
 
-    {
-        type: 'input',
-        message: 'Tests?',
-        name: 'tests',
-    },
+        {
+            type: 'input',
+            message: 'Who is contributing?',
+            name: 'contribution',
+        },
 
-    {
-        type: 'input',
-        message: 'Questions',
-        name: 'questions',
-    }
-];
-for (const question of questions) {
-    console.log(questions)
-}
+        {
+            type: 'input',
+            message: 'Tests?',
+            name: 'tests',
+        },
+
+        {
+            type: 'input',
+            message: 'Questions',
+            name: 'questions',
+        }
+    ]);
+};
 
 // TODO: Create a function to write README file
-function writeToFile(fileName, data) {
-
-    const markdown = generateMarkdown(data);
-
-    fs.writeFile(fileName, markdown, function(err) {
-        if (err) throw err;
-        console.log('success!');
-    });
-}
+const writeFile = data => {
+    fs.writeFile('README.md', data, err => {
+        if (err) {
+            console.log(err);
+            return;
+        } else {
+            console.log("Your README has been successfully created!")
+        }
+    })
+};
 
 // TODO: Create a function to initialize app
-function init() {
-    inquirer
-        .prompt(questions)
-        .then(function(data) {
-            writeToFile(fileName, data)
-        })
-}
-
-// Function call to initialize app
-init();
+questions()
+    .then(answers => {
+        return generateMarkdown(answers);
+    })
+    .then(data => {
+        return writeFile(data);
+    })
+    .catch(err => {
+        console.log(err)
+    })
