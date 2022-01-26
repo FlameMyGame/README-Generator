@@ -1,93 +1,106 @@
 // TODO: Include packages needed for this application
-const inquirer = require('inquirer');
-const fs = require('fs');
-const generateMarkdown = require("./utils/generateMarkdown.js");
+const inquirer = require('inquirer')
+const fs = require('fs')
+const badgeGeneration = require('./utils/generateMarkdown')
+    // TODO: Create an array of questions for user input
+const questions = [{
+        type: 'input',
+        message: 'Enter your gitHub username',
+        name: 'githubUser'
+    },
+    {
+        type: 'input',
+        message: 'Enter email address',
+        name: 'email'
+    },
+    {
+        type: 'input',
+        message: 'Name of the project',
+        name: 'title',
+    },
+    {
+        type: 'input',
+        message: 'list all contributors',
+        name: 'contributors',
+    },
+    {
+        type: 'input',
+        message: 'Give a brief description of the project',
+        name: 'description'
+    },
+    {
+        type: 'input',
+        message: 'Usage for project',
+        name: 'usage',
+    },
+    {
+        type: 'input',
+        message: 'Installations for the project ',
+        name: 'installs',
+    },
+    {
+        type: 'input',
+        message: 'Tests',
+        name: 'test',
+    },
+    {
+        type: 'list',
+        message: 'Choose license for the project',
+        name: 'license',
+        choices: ['none', 'Apache', 'MIT', 'ISC']
+    },
 
-// TODO: Create an array of questions for user input
-const questions = () => {
+];
+init = function() {
+    inquirer
+        .prompt(questions)
+        .then((response) => {
+            fs.writeFile('README.md', readMe(response), (err) => err ? console.log(err) : console.log('README.md file created'))
+        })
+}
 
-    return inquirer.prompt([{
-            type: 'input',
-            message: 'What is the title of your project?',
-            name: 'title',
-        },
-
-        {
-            type: 'input',
-            message: 'Provide a description of your project.',
-            name: 'description',
-        },
-
-        {
-            type: 'input',
-            message: 'What would you like to include in the Table of Contents?',
-            name: 'contents',
-        },
-
-        {
-            type: 'input',
-            message: 'Installation',
-            name: 'installation',
-        },
-
-        {
-            type: 'input',
-            message: 'Usage',
-            name: 'usage',
-        },
-
-        {
-            type: 'list',
-            message: 'Select a License',
-            name: 'license',
-            choices: [
-                'MIT',
-                'GNU GPLv3',
-                'ISC',
-                'Apache',
-            ]
-        },
-
-        {
-            type: 'input',
-            message: 'Who is contributing?',
-            name: 'contribution',
-        },
-
-        {
-            type: 'input',
-            message: 'Tests?',
-            name: 'tests',
-        },
-
-        {
-            type: 'input',
-            message: 'Questions',
-            name: 'questions',
-        }
-    ]);
-};
 
 // TODO: Create a function to write README file
-const writeFile = data => {
-    fs.writeFile('README.md', data, err => {
-        if (err) {
-            console.log(err);
-            return;
-        } else {
-            console.log("Your README has been successfully created!")
-        }
-    })
-};
+function readMe(data) {
+    return (
+        `## ${data.title}
+
+${badgeGeneration.renderLicenseBadge(data.license).trim()}    
+
+${data.description}
+## Table of contents
+- [Description](#description)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Tests](#tests)
+- [license](#license)
+- [Questions](#questions)
+
+## Installation
+${data.installs}
+
+## Usage
+${data.usage}
+
+## Contributing
+${data.contributors}
+
+## Tests
+${data.tests}
+${badgeGeneration.renderLicenseSection(data.license)}
+
+## Questions
+
+Email: ${data.email}
+Github: https://www.github.com/${data.githubUser}
+
+
+    `)
+}
 
 // TODO: Create a function to initialize app
-questions()
-    .then(answers => {
-        return generateMarkdown(answers);
-    })
-    .then(data => {
-        return writeFile(data);
-    })
-    .catch(err => {
-        console.log(err)
-    })
+function init() {}
+
+// Function call to initialize app
+init();
